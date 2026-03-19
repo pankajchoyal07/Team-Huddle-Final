@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SquareFin Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#0f2444;--blue:#1a3f7a;--blue2:#1e5fa8;--gold:#d4a843;--gold2:#f0c060;--light:#f4f7ff;--white:#ffffff;--text:#1a2e4a;--muted:#5a7a9a;}
+html{scroll-behavior:smooth;}
+body{font-family:'Nunito',sans-serif;background:var(--light);color:var(--text);overflow-x:hidden;}
+nav{background:var(--navy);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--white);font-weight:700;}
+.logo-text span{color:var(--gold);}
+.nav-links{display:flex;gap:8px;}
+.nav-link{color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,0.1);}
+.nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy)!important;border-radius:8px;padding:8px 18px;}
+.hero{background:linear-gradient(160deg,var(--navy) 0%,var(--blue) 60%,#1a4a8a 100%);padding:80px 40px 100px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;border:1px solid rgba(212,168,67,0.08);top:-200px;right:-100px;animation:spin 30s linear infinite;}
+.hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;border:1px solid rgba(212,168,67,0.06);bottom:-150px;left:-80px;animation:spin 20s linear infinite reverse;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.hero-tag{display:inline-block;background:rgba(212,168,67,0.15);border:1px solid rgba(212,168,67,0.4);color:var(--gold);font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;padding:6px 18px;border-radius:30px;margin-bottom:20px;animation:fadeUp 0.6s ease both;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px;animation:fadeUp 0.7s 0.1s ease both;}
+.hero h1 span{color:var(--gold);}
+.hero p{font-size:16px;color:rgba(255,255,255,0.65);max-width:560px;margin:0 auto 36px;line-height:1.7;animation:fadeUp 0.7s 0.2s ease both;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease both;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:14px;font-weight:800;padding:14px 28px;border-radius:12px;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(212,168,67,0.3);}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-secondary{background:rgba(255,255,255,0.1);color:#fff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);transition:all 0.2s;}
+.btn-secondary:hover{background:rgba(255,255,255,0.18);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.stats-strip{background:var(--white);padding:28px 40px;display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 4px 24px rgba(0,0,0,0.07);}
+.stat-item{text-align:center;padding:16px;border-right:1px solid #e8eff8;}
+.stat-item:last-child{border-right:none;}
+.stat-val{font-size:32px;font-weight:900;color:var(--blue);font-family:'Cormorant Garamond',serif;}
+.stat-lbl{font-size:12px;font-weight:700;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.8px;}
+.section{padding:72px 40px;max-width:1100px;margin:0 auto;}
+.sec-eyebrow{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--navy);margin-bottom:10px;line-height:1.2;}
+.sec-sub{font-size:14px;color:var(--muted);max-width:520px;line-height:1.7;}
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
+.prod-card{background:var(--white);border-radius:20px;padding:28px;box-shadow:0 2px 16px rgba(0,0,0,0.06);border:1px solid #e0eaf8;transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;}
+.prod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--blue2));}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.1);}
+.prod-card.gold-accent::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.prod-card.green-accent::before{background:linear-gradient(90deg,#1a7a4a,#2d9a5f);}
+.prod-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;}
+.icon-blue{background:#eef4ff;}.icon-gold{background:#fffbe6;}.icon-green{background:#eafaf2;}
+.icon-purple{background:#f0eeff;}.icon-red{background:#fff0f0;}.icon-teal{background:#e6faf5;}
+.prod-name{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+.prod-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+.prod-features{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.prod-features li{font-size:12px;color:var(--text);display:flex;align-items:center;gap:7px;font-weight:600;}
+.prod-features li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.prod-badge{display:inline-block;background:#eef4ff;color:var(--blue);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;margin-top:14px;}
+.tools-bg{background:linear-gradient(160deg,var(--navy),var(--blue));padding:72px 40px;}
+.tools-inner{max-width:1100px;margin:0 auto;}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;}
+.tool-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:32px;transition:background 0.2s,transform 0.2s;}
+.tool-card:hover{background:rgba(255,255,255,0.1);transform:translateY(-3px);}
+.tool-icon{font-size:36px;margin-bottom:16px;}
+.tool-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;}
+.tool-desc{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:20px;}
+.tool-points{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.tool-points li{font-size:13px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:8px;font-weight:600;}
+.tool-btn{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);font-size:13px;font-weight:800;padding:11px 24px;border-radius:10px;text-decoration:none;transition:transform 0.2s;}
+.tool-btn:hover{transform:scale(1.03);}
+.tool-btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,0.3);color:#fff;}
+.loans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px;}
+.loan-card{background:var(--white);border-radius:14px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.05);border:1px solid #e0eaf8;transition:all 0.2s;}
+.loan-card:hover{border-color:var(--blue);transform:translateY(-3px);}
+.loan-icon{font-size:28px;margin-bottom:10px;}
+.loan-name{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.loan-rate{font-size:11px;color:var(--muted);font-weight:600;}
+.loan-badge{display:inline-block;margin-top:8px;background:#eef4ff;color:var(--blue);font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;}
+footer{background:var(--navy);padding:40px;text-align:center;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:28px;color:#fff;font-weight:700;margin-bottom:8px;}
+.footer-logo span{color:var(--gold);}
+.footer-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:20px;}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.footer-links a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:12px;font-weight:700;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-copy{font-size:11px;color:rgba(255,255,255,0.25);}
+@media(max-width:900px){.hero h1{font-size:36px;}.products-grid{grid-template-columns:1fr 1fr;}.tools-grid{grid-template-columns:1fr;}.loans-grid{grid-template-columns:repeat(2,1fr);}.stats-strip{grid-template-columns:repeat(2,1fr);}.stat-item:nth-child(2){border-right:none;}}
+@media(max-width:600px){nav{padding:0 16px;}.hero{padding:60px 20px 80px;}.hero h1{font-size:28px;}.section{padding:48px 20px;}.products-grid{grid-template-columns:1fr;}.loans-grid{grid-template-columns:repeat(2,1fr);}.stats-strip{grid-template-columns:1fr 1fr;}.stat-item{padding:12px;}.tools-bg{padding:48px 20px;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">💎</div>
+    <div class="logo-text">Square<span>Fin</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#products" class="nav-link">Products</a>
+    <a href="#loans" class="nav-link">Loans</a>
+    <a href="#tools" class="nav-link">Team Tools</a>
+    <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/team-entry.html" class="nav-link nav-cta">Daily Work →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">✦ SquareFin Portal — Team Dashboard</div>
+  <h1>Your Complete<br><span>Wealth & Finance</span> Platform</h1>
+  <p>Empowering partners and executives with the right tools, products, and insights to deliver exceptional financial solutions to every client.</p>
+  <div class="hero-btns">
+    <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/team-entry.html" class="btn-primary">📋 Daily Work Entry</a>
+    <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/manager-dashboard.html" class="btn-secondary">📊 Manager Dashboard</a>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-val">11</div><div class="stat-lbl">Active Executives</div></div>
+  <div class="stat-item"><div class="stat-val">6</div><div class="stat-lbl">Product Departments</div></div>
+  <div class="stat-item"><div class="stat-val">2x</div><div class="stat-lbl">Daily Sessions</div></div>
+  <div class="stat-item"><div class="stat-val">∞</div><div class="stat-lbl">Growth Potential</div></div>
+</div>
+
+<div class="section" id="products">
+  <div class="sec-eyebrow">Our Product Portfolio</div>
+  <div class="sec-title">What We Offer</div>
+  <div class="sec-sub">Comprehensive financial products designed to help every client achieve their wealth and lifestyle goals.</div>
+  <div class="products-grid">
+    <div class="prod-card gold-accent">
+      <div class="prod-icon icon-gold">💳</div>
+      <div class="prod-name">Credit Cards</div>
+      <div class="prod-desc">Premium credit card solutions with exclusive benefits, rewards, and lifestyle privileges for every customer segment.</div>
+      <ul class="prod-features">
+        <li>Reward points on every spend</li>
+        <li>Zero annual fee options</li>
+        <li>Airport lounge access</li>
+        <li>Cashback & fuel surcharge waiver</li>
+      </ul>
+      <span class="prod-badge">Instant Approval</span>
+    </div>
+    <div class="prod-card">
+      <div class="prod-icon icon-green">📈</div>
+      <div class="prod-name">SIP & Investments</div>
+      <div class="prod-desc">Systematic Investment Plans tailored to every risk appetite — from conservative savers to aggressive wealth builders.</div>
+      <ul class="prod-features">
+        <li>Start from Rs. 500/month</li>
+        <li>Auto-debit convenience</li>
+        <li>Flexible tenure options</li>
+        <li>Tax-saving ELSS plans</li>
+      </ul>
+      <span class="prod-badge">Long-term Wealth</span>
+    </div>
+    <div class="prod-card">
+      <div class="prod-icon icon-purple">🏦</div>
+      <div class="prod-name">Mutual Funds</div>
+      <div class="prod-desc">Professionally managed fund portfolios across equity, debt, hybrid, and index categories for every investment goal.</div>
+      <ul class="prod-features">
+        <li>Equity, Debt & Hybrid funds</li>
+        <li>Index & Liquid funds</li>
+        <li>SEBI regulated & transparent</li>
+        <li>Expert fund management</li>
+      </ul>
+      <span class="prod-badge">SEBI Regulated</span>
+    </div>
+    <div class="prod-card">
+      <div class="prod-icon icon-blue">🏠</div>
+      <div class="prod-name">Home Loans</div>
+      <div class="prod-desc">Affordable home financing with competitive interest rates, quick approvals, and flexible repayment structures.</div>
+      <ul class="prod-features">
+        <li>Up to 90% funding</li>
+        <li>Competitive interest rates</li>
+        <li>Up to 30-year tenure</li>
+        <li>Balance transfer available</li>
+      </ul>
+      <span class="prod-badge">Quick Sanction</span>
+    </div>
+    <div class="prod-card green-accent">
+      <div class="prod-icon icon-teal">💰</div>
+      <div class="prod-name">Personal & Business Loans</div>
+      <div class="prod-desc">Instant personal loans and business financing solutions with minimal documentation and fast disbursal.</div>
+      <ul class="prod-features">
+        <li>No collateral required</li>
+        <li>Same-day disbursal</li>
+        <li>Flexible EMI options</li>
+        <li>Minimal documentation</li>
+      </ul>
+      <span class="prod-badge">Fast Disbursal</span>
+    </div>
+    <div class="prod-card">
+      <div class="prod-icon icon-red">🚗</div>
+      <div class="prod-name">Vehicle Loans</div>
+      <div class="prod-desc">New & used car loans, two-wheeler financing with RC encumbrance check and competitive rates.</div>
+      <ul class="prod-features">
+        <li>New & used car loans</li>
+        <li>Two-wheeler financing</li>
+        <li>RC encumbrance check</li>
+        <li>Up to 100% on-road funding</li>
+      </ul>
+      <span class="prod-badge">RC Verified</span>
+    </div>
+  </div>
+</div>
+
+<div style="background:#fff;">
+  <div class="section" id="loans" style="padding-top:60px;padding-bottom:60px;">
+    <div class="sec-eyebrow">Loan Products</div>
+    <div class="sec-title">Complete Loan Portfolio</div>
+    <div class="sec-sub">End-to-end loan solutions across all major categories with competitive rates and hassle-free processing.</div>
+    <div class="loans-grid">
+      <div class="loan-card"><div class="loan-icon">🏠</div><div class="loan-name">Home Loan</div><div class="loan-rate">Up to 30 years</div><div class="loan-badge">Most Popular</div></div>
+      <div class="loan-card"><div class="loan-icon">💳</div><div class="loan-name">Personal Loan</div><div class="loan-rate">Same day approval</div><div class="loan-badge">No Collateral</div></div>
+      <div class="loan-card"><div class="loan-icon">💼</div><div class="loan-name">Business Loan</div><div class="loan-rate">Quick disbursal</div><div class="loan-badge">Min. Docs</div></div>
+      <div class="loan-card"><div class="loan-icon">🚗</div><div class="loan-name">New Car Loan</div><div class="loan-rate">Up to 100% funding</div><div class="loan-badge">On-road Price</div></div>
+      <div class="loan-card"><div class="loan-icon">🚙</div><div class="loan-name">Used Car Loan</div><div class="loan-rate">RC check included</div><div class="loan-badge">RC Verified</div></div>
+      <div class="loan-card"><div class="loan-icon">🛵</div><div class="loan-name">Two Wheeler Loan</div><div class="loan-rate">Easy EMI options</div><div class="loan-badge">Low Rate</div></div>
+      <div class="loan-card"><div class="loan-icon">🏢</div><div class="loan-name">Loan Against Property</div><div class="loan-rate">High value funding</div><div class="loan-badge">High Value</div></div>
+      <div class="loan-card"><div class="loan-icon">💎</div><div class="loan-name">Gold Loan</div><div class="loan-rate">Instant disbursal</div><div class="loan-badge">Quick Cash</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="tools-bg" id="tools">
+  <div class="tools-inner">
+    <div class="sec-eyebrow" style="color:var(--gold);">Team Tools</div>
+    <div class="sec-title" style="color:#fff;">Built for Your Team</div>
+    <div class="sec-sub" style="color:rgba(255,255,255,0.6);">Powerful daily tools to track performance, share updates, and grow together as a team.</div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon">📋</div>
+        <div class="tool-name">Daily Work Entry</div>
+        <div class="tool-desc">Submit morning and evening updates in minutes. Track targets, calls, revenue, and challenges — all departments covered.</div>
+        <ul class="tool-points">
+          <li><span>✅</span> Morning & Evening sessions</li>
+          <li><span>✅</span> All 6 departments covered</li>
+          <li><span>✅</span> RC status check for used car loans</li>
+          <li><span>✅</span> Share ideas & suggestions</li>
+          <li><span>✅</span> Saves directly to Google Sheet</li>
+        </ul>
+        <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/team-entry.html" class="tool-btn">Open Entry Form →</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">📊</div>
+        <div class="tool-name">Manager Dashboard</div>
+        <div class="tool-desc">Real-time view of all team entries, department-wise revenue, ideas shared, and full executive performance tracking.</div>
+        <ul class="tool-points">
+          <li><span>✅</span> Live KPIs & department overview</li>
+          <li><span>✅</span> Filter by session, dept, name</li>
+          <li><span>✅</span> Revenue & conversion tracking</li>
+          <li><span>✅</span> Delete entries anytime</li>
+          <li><span>✅</span> Export to CSV</li>
+        </ul>
+        <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/manager-dashboard.html" class="tool-btn tool-btn-outline">Open Dashboard →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Square<span>Fin</span> Portal</div>
+  <div class="footer-sub">Your Trusted Partner in Wealth Creation</div>
+  <div class="footer-links">
+    <a href="#products">Products</a>
+    <a href="#loans">Loans</a>
+    <a href="#tools">Team Tools</a>
+    <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/team-entry.html">Daily Work</a>
+    <a href="https://agent-69bbd9f17c9064cbbef--teal-lebkuchen-89479b.netlify.app/manager-dashboard.html">Dashboard</a>
+  </div>
+  <div class="footer-copy">© 2026 SquareFin Portal. All rights reserved. | Head Office: Ahinsa Circle, Jaipur</div>
+</footer>
+</body>
+</html>

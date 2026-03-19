@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Manager Dashboard — Square Fin Guru</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#f0f4ff;min-height:100vh;}
+.topbar{background:linear-gradient(135deg,#1a3f7a,#1e5fa8);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.topbar h1{color:#fff;font-size:20px;font-weight:800;}
+.topbar-sub{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px;}
+.topbar-right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tb-tag{background:rgba(255,255,255,0.18);color:#fff;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;}
+.tb-btn{padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+.btn-ref{background:rgba(255,255,255,0.2);color:#fff;}
+.btn-exp{background:#fff;color:#1a3f7a;}
+.main{padding:18px;max-width:1100px;margin:0 auto;}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border-top:3px solid #1a3f7a;}
+.kpi-val{font-size:24px;font-weight:900;color:#1a3f7a;}
+.kpi-lbl{font-size:10px;font-weight:700;color:#7a9abf;margin-top:3px;text-transform:uppercase;letter-spacing:0.8px;}
+.dept-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
+.ds{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;}
+.ds-icon{font-size:20px;margin-bottom:4px;}
+.ds-name{font-size:10px;font-weight:700;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.ds-rev{font-size:16px;font-weight:900;color:#1a3f7a;}
+.ds-cnt{font-size:10px;color:#aac0d8;margin-top:2px;}
+.prog-bar{height:3px;background:#e8f0fa;border-radius:2px;margin-top:6px;}
+.prog-fill{height:100%;border-radius:2px;background:#1a3f7a;}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.f-btn{padding:6px 14px;border-radius:20px;border:1.5px solid #c8d8f0;background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:#4a6a8a;font-family:'Nunito',sans-serif;}
+.f-btn.on{background:#1a3f7a;color:#fff;border-color:#1a3f7a;}
+.f-search{padding:7px 14px;border-radius:20px;border:1.5px solid #c8d8f0;font-size:12px;font-family:'Nunito',sans-serif;color:#1a2e4a;background:#fff;min-width:160px;}
+.sec-title{font-size:11px;font-weight:800;color:#1a3f7a;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
+.entries{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.ecard{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.etop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.eleft{display:flex;align-items:center;gap:10px;}
+.av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+.av-c{background:#B5D4F4;color:#0C447C;}
+.av-s{background:#9FE1CB;color:#085041;}
+.av-m{background:#CECBF6;color:#3C3489;}
+.av-t{background:#FAC775;color:#633806;}
+.av-v{background:#F5C4B3;color:#712B13;}
+.av-l{background:#F7C1C1;color:#791F1F;}
+.ename{font-size:15px;font-weight:800;color:#1a2e4a;}
+.emeta{font-size:11px;color:#7a9abf;margin-top:1px;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.tag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;}
+.tag-m{background:#fff8e1;color:#b07800;}
+.tag-e{background:#e8eeff;color:#3a5abf;}
+.tag-dept{background:#eef4ff;color:#1a5fa8;}
+.tag-rc-limit{background:#fff0f0;color:#c0392b;}
+.tag-rc-ok{background:#eafaf2;color:#1a7a4a;}
+.tag-loan{background:#fef3c7;color:#92400e;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+.sp{background:#f0f6ff;border-radius:10px;padding:9px 12px;}
+.sp-lbl{font-size:9px;font-weight:700;color:#7a9abf;text-transform:uppercase;letter-spacing:0.5px;}
+.sp-val{font-size:18px;font-weight:900;color:#1a3f7a;margin-top:2px;}
+.sp-val.green{color:#1a7a4a;}
+.txt-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tb{background:#f7faff;border-radius:10px;padding:9px 12px;}
+.tb-lbl{font-size:9px;font-weight:800;color:#7a9abf;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.tb-val{font-size:11px;color:#2a3a5a;line-height:1.5;}
+.tb-idea{background:#fffbe6;border:1.5px solid #ffe066;border-radius:10px;padding:9px 12px;}
+.tb-idea .tb-lbl{color:#b07800;}
+.no-entries{text-align:center;padding:40px;color:#7a9abf;}
+.ideas-wrap{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:20px;}
+.idea-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f0f4ff;}
+.idea-row:last-child{border-bottom:none;}
+.idea-text{font-size:12px;color:#1a2e4a;line-height:1.5;}
+.idea-meta{font-size:10px;color:#aac0d8;margin-top:3px;}
+.del-btn{background:#fff0f0;border:1px solid #ffaaaa;color:#c0392b;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px;transition:all 0.15s;}
+.del-btn:hover{background:#c0392b;color:#fff;}
+.clear-all-btn{padding:7px 16px;border-radius:20px;border:1px solid rgba(255,100,100,0.4);background:rgba(255,80,80,0.15);color:#ffaaaa;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+.error-box{background:#fff0f0;border:1.5px solid #ffaaaa;border-radius:12px;padding:14px 18px;color:#c0392b;font-size:13px;margin-bottom:16px;font-weight:600;}
+@media(max-width:700px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr);}
+  .dept-summary{grid-template-columns:repeat(3,1fr);}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .txt-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>📊 Manager Dashboard</h1>
+    <div class="topbar-sub">Square Fin Guru &mdash; Daily Work Tracker</div>
+  </div>
+  <div class="topbar-right">
+    <span class="tb-tag" id="dbadge"></span>
+    <button class="tb-btn btn-ref" onclick="loadData()">🔄 Refresh</button>
+    <button class="tb-btn btn-exp" onclick="exportCSV()">⬇ Export CSV</button>
+    <button class="clear-all-btn" onclick="clearAll()">🗑 Clear All</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-val" id="k-total">—</div><div class="kpi-lbl">Total Entries</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-rev" style="font-size:17px;">—</div><div class="kpi-lbl">Total Revenue</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-done">—</div><div class="kpi-lbl">Tasks Completed</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-planned">—</div><div class="kpi-lbl">Tasks Planned</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-ideas">—</div><div class="kpi-lbl">Ideas Shared</div></div>
+  </div>
+
+  <div class="sec-title">Department Overview</div>
+  <div class="dept-summary" id="dept-summary"></div>
+
+  <div class="filters">
+    <button class="f-btn on" onclick="setF('all',this)">All Entries</button>
+    <button class="f-btn" onclick="setF('morning',this)">🌅 Morning</button>
+    <button class="f-btn" onclick="setF('evening',this)">🌆 Evening</button>
+    <button class="f-btn" onclick="setF('Credit Cards',this)">💳 Cards</button>
+    <button class="f-btn" onclick="setF('SIP & Others',this)">📈 SIP</button>
+    <button class="f-btn" onclick="setF('Mutual Funds',this)">🏦 MF</button>
+    <button class="f-btn" onclick="setF('Telesales',this)">📞 Telesales</button>
+    <button class="f-btn" onclick="setF('Partner Visit',this)">🚗 Visit</button>
+    <button class="f-btn" onclick="setF('Loans',this)">💰 Loans</button>
+    <input class="f-search" type="text" placeholder="🔍 Search executive..." oninput="setSearch(this.value)"/>
+  </div>
+
+  <div id="err-box" class="error-box" style="display:none;"></div>
+  <div class="sec-title">Executive Entries</div>
+  <div class="entries" id="entries-list"><div class="loading-box">⏳ Loading entries...</div></div>
+
+  <div class="sec-title">💡 Ideas & Suggestions</div>
+  <div class="ideas-wrap" id="ideas-wrap"><div style="color:#aac0d8;font-size:13px;">Loading...</div></div>
+</div>
+
+<script>
+// ⚠️ APNA GOOGLE APPS SCRIPT URL YAHAN PASTE KARO
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysmdvgvkJ4BWc9co4dXNtrSm6d5cfR-6VH7kNbvoxhdr9PFOeBnf5jXFIwXjulOvueSA/exec";
+
+let allEntries=[], fv='all', sv='';
+const now=new Date();
+const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('dbadge').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+
+const depts=[
+  {key:'Credit Cards',icon:'💳',ac:'av-c'},
+  {key:'SIP & Others',icon:'📈',ac:'av-s'},
+  {key:'Mutual Funds',icon:'🏦',ac:'av-m'},
+  {key:'Telesales',icon:'📞',ac:'av-t'},
+  {key:'Partner Visit',icon:'🚗',ac:'av-v'},
+  {key:'Loans',icon:'💰',ac:'av-l'},
+];
+
+function avC(dept){const d=depts.find(x=>x.key===dept);return d?d.ac:'av-t';}
+function dIcon(dept){const d=depts.find(x=>x.key===dept);return d?d.icon:'📋';}
+function ini(name){return(name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function gv(e,key){return e[key]||'';}
+
+function setF(v,el){fv=v;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');render();}
+function setSearch(v){sv=v.toLowerCase();render();}
+
+function loadData(){
+  if(SCRIPT_URL==='PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE'){
+    document.getElementById('err-box').style.display='block';
+    document.getElementById('err-box').textContent='⚠️ Please set the Script URL in this file first!';
+    document.getElementById('entries-list').innerHTML='';
+    return;
+  }
+  document.getElementById('entries-list').innerHTML='<div class="loading-box">⏳ Loading entries...</div>';
+  document.getElementById('err-box').style.display='none';
+
+  // Remove old script tag if exists
+  const old=document.getElementById('jsonp-script');
+  if(old) old.remove();
+
+  // JSONP approach to avoid CORS
+  window.handleData=function(json){
+    if(json.success){
+      allEntries=json.entries||[];
+      render();
+    } else {
+      showErr('Server error: '+(json.error||'Unknown error'));
+    }
+  };
+
+  const script=document.createElement('script');
+  script.id='jsonp-script';
+  script.src=SCRIPT_URL+'?callback=handleData&t='+Date.now();
+  script.onerror=function(){
+    showErr('Could not load data. Please check your internet and try refreshing.');
+  };
+  document.body.appendChild(script);
+}
+
+function showErr(msg){
+  document.getElementById('err-box').style.display='block';
+  document.getElementById('err-box').textContent='❌ '+msg;
+  document.getElementById('entries-list').innerHTML='';
+}
+
+function render(){
+  let data=allEntries.filter(e=>{
+    const sess=(gv(e,'Session')||'').toLowerCase();
+    const dept=gv(e,'Department')||gv(e,'Dept')||'';
+    const name=(gv(e,'Name')||'').toLowerCase();
+    if(fv==='morning'&&sess!=='morning') return false;
+    if(fv==='evening'&&sess!=='evening') return false;
+    if(!['all','morning','evening'].includes(fv)&&dept!==fv) return false;
+    if(sv&&!name.includes(sv)) return false;
+    return true;
+  });
+
+  const totalRev=allEntries.reduce((s,e)=>s+(parseFloat(gv(e,'Revenue'))||0),0);
+  const totalDone=allEntries.reduce((s,e)=>s+(parseInt(gv(e,'Completed'))||parseInt(gv(e,'Done'))||0),0);
+  const totalPlan=allEntries.reduce((s,e)=>s+(parseInt(gv(e,'Planned'))||0),0);
+  const totalIdeas=allEntries.filter(e=>(gv(e,'Idea')||'').toString().trim()).length;
+
+  document.getElementById('k-total').textContent=allEntries.length;
+  document.getElementById('k-rev').textContent='Rs. '+totalRev.toLocaleString('en-IN');
+  document.getElementById('k-done').textContent=totalDone;
+  document.getElementById('k-planned').textContent=totalPlan;
+  document.getElementById('k-ideas').textContent=totalIdeas;
+
+  const maxRev=Math.max(...depts.map(d=>allEntries.filter(e=>(gv(e,'Department')||gv(e,'Dept'))===d.key).reduce((s,e)=>s+(parseFloat(gv(e,'Revenue'))||0),0)),1);
+  document.getElementById('dept-summary').innerHTML=depts.map(d=>{
+    const de=allEntries.filter(e=>(gv(e,'Department')||gv(e,'Dept'))===d.key);
+    const dr=de.reduce((s,e)=>s+(parseFloat(gv(e,'Revenue'))||0),0);
+    const pct=Math.round((dr/maxRev)*100);
+    return `<div class="ds">
+      <div class="ds-icon">${d.icon}</div>
+      <div class="ds-name">${d.key}</div>
+      <div class="ds-rev">Rs. ${dr.toLocaleString('en-IN')}</div>
+      <div class="ds-cnt">${de.length} entr${de.length===1?'y':'ies'}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+
+  const list=document.getElementById('entries-list');
+  if(!data.length){
+    list.innerHTML='<div class="no-entries"><div style="font-size:36px;">📭</div><p style="margin-top:8px;">No entries found.</p></div>';
+  } else {
+    list.innerHTML=[...data].reverse().map((e,i)=>{
+      const dept=gv(e,'Department')||gv(e,'Dept')||'';
+      const sess=(gv(e,'Session')||'morning').toLowerCase();
+      const rev=parseFloat(gv(e,'Revenue'))||0;
+      const rc=gv(e,'RC Status')||gv(e,'RC Type')||gv(e,'rcType')||'';
+      const loan=gv(e,'Loan Type')||gv(e,'loanType')||'';
+      const partner=gv(e,'Partner')||'';
+      const idea=gv(e,'Idea')||'';
+      const challenge=gv(e,'Challenges')||gv(e,'Challenge')||'';
+      const plan=gv(e,'Action Plan')||gv(e,'Plan')||'';
+      const done=gv(e,'Completed')||gv(e,'Done')||'0';
+      const planned=gv(e,'Planned')||'—';
+      const conv=gv(e,'Conversions')||'0';
+      const rcTag=rc==='limit'?'<span class="tag tag-rc-limit">⚠️ RC Within Limit</span>':rc==='normal'?'<span class="tag tag-rc-ok">✅ RC Clear</span>':'';
+      const loanTag=loan?`<span class="tag tag-loan">${loan}</span>`:'';
+      return `<div class="ecard">
+        <div class="etop">
+          <div class="eleft">
+            <div class="av ${avC(dept)}">${ini(gv(e,'Name'))}</div>
+            <div><div class="ename">${gv(e,'Name')||'—'}</div><div class="emeta">${dept} &middot; ${gv(e,'Date')||''} &middot; ${gv(e,'Time')||''}</div></div>
+          </div>
+          <div class="tags">
+            <span class="tag ${sess==='morning'?'tag-m':'tag-e'}">${sess==='morning'?'Morning Session':'Evening Session'}</span>
+            <span class="tag tag-dept">${dIcon(dept)} ${dept}</span>
+            ${rcTag}${loanTag}
+          </div>
+        </div>
+        <div class="stats">
+          <div class="sp"><div class="sp-lbl">Planned</div><div class="sp-val">${planned}</div></div>
+          <div class="sp"><div class="sp-lbl">Completed</div><div class="sp-val">${done}</div></div>
+          <div class="sp"><div class="sp-lbl">Conversions</div><div class="sp-val green">${conv}</div></div>
+          <div class="sp" style="background:#eafaf2;"><div class="sp-lbl" style="color:#1a7a4a;">Revenue</div><div class="sp-val green">Rs. ${rev.toLocaleString('en-IN')}</div></div>
+        </div>
+        <div class="txt-row">
+          ${challenge?`<div class="tb"><div class="tb-lbl">Challenges Faced</div><div class="tb-val">${challenge}</div></div>`:'<div></div>'}
+          ${plan?`<div class="tb"><div class="tb-lbl">Action Plan</div><div class="tb-val">${plan}</div></div>`:'<div></div>'}
+          ${idea?`<div class="tb-idea"><div class="tb-lbl">Idea Shared</div><div class="tb-val">${idea}</div></div>`:partner?`<div class="tb"><div class="tb-lbl">Partner / Location</div><div class="tb-val">${partner}</div></div>`:'<div></div>'}
+        </div>
+        <div style="text-align:right;margin-top:6px;">
+          <button class="del-btn" onclick="deleteEntry(${i})">🗑 Delete Entry</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const ideas=allEntries.filter(e=>(gv(e,'Idea')||'').toString().trim());
+  const ideasEl=document.getElementById('ideas-wrap');
+  if(!ideas.length){
+    ideasEl.innerHTML='<div style="color:#aac0d8;font-size:13px;padding:6px 0;">No ideas have been shared yet.</div>';
+  } else {
+    ideasEl.innerHTML=[...ideas].reverse().map(e=>{
+      const dept=gv(e,'Department')||gv(e,'Dept')||'';
+      return `<div class="idea-row">
+        <div class="av ${avC(dept)}" style="flex-shrink:0;">${ini(gv(e,'Name'))}</div>
+        <div>
+          <div class="idea-text">${gv(e,'Idea')}</div>
+          <div class="idea-meta">${gv(e,'Name')} &middot; ${dept} &middot; ${(gv(e,'Session')||'').charAt(0).toUpperCase()+(gv(e,'Session')||'').slice(1)} Session &middot; ${gv(e,'Date')||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function exportCSV(){
+  if(!allEntries.length){alert('No entries available to export.');return;}
+  const headers=Object.keys(allEntries[0]);
+  const rows=allEntries.map(e=>headers.map(h=>'"'+(e[h]||'').toString().replace(/"/g,'""')+'"').join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='huddle-report-'+now.toLocaleDateString('en-IN').replace(/\//g,'-')+'.csv';
+  a.click();
+}
+
+function deleteEntry(i){
+  if(!confirm('Are you sure you want to delete this entry?')) return;
+  // Note: This removes from local view only — to permanently delete, remove from Google Sheet manually
+  const filtered=[...allEntries].reverse();
+  const actualIdx=allEntries.indexOf(filtered[i]);
+  if(actualIdx>-1) allEntries.splice(actualIdx,1);
+  render();
+}
+
+function clearAll(){
+  if(!confirm('Delete ALL entries from this view? This cannot be undone.')) return;
+  allEntries=[];
+  render();
+}
+
+// Auto refresh every 30 seconds
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
