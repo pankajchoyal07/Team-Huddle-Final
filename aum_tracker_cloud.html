@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SquareFin — AUM Performance Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh;}
+
+/* SYNC OVERLAY */
+.sync-overlay{position:fixed;inset:0;background:rgba(241,245,249,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;}
+.sync-spinner{width:44px;height:44px;border:4px solid #e2e8f0;border-top-color:#1e40af;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-text{font-size:14px;font-weight:600;color:#64748b;}
+.setup-box{background:#fff;border-radius:16px;padding:32px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center;}
+.setup-box h2{font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px;}
+.setup-box p{font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.6;}
+.setup-box input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;outline:none;margin-bottom:10px;}
+.setup-box input:focus{border-color:#3b82f6;}
+.setup-btn{background:#1e40af;color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;width:100%;}
+.setup-btn:hover{background:#1d4ed8;}
+.setup-note{font-size:11px;color:#94a3b8;margin-top:10px;}
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;}
+.logo-name{font-size:17px;font-weight:800;color:#1e293b;}
+.logo-name span{color:#3b82f6;}
+.topbar-center{display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:4px;}
+.period-btn{padding:6px 18px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;}
+.period-btn.on{background:#fff;color:#1e40af;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.updated-tag{font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.save-btn{background:#1e40af;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:6px;transition:background 0.2s;}
+.save-btn:hover{background:#1d4ed8;}
+
+/* MAIN */
+.main{padding:24px 32px;max-width:1480px;margin:0 auto;}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+.kpi{background:#fff;border-radius:14px;padding:20px 22px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.04);position:relative;}
+.kpi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;}
+.kpi-icon.blue{background:#eff6ff;}
+.kpi-icon.green{background:#f0fdf4;}
+.kpi-icon.amber{background:#fffbeb;}
+.kpi-icon.purple{background:#faf5ff;}
+.kpi-icon.red{background:#fef2f2;}
+.kpi-label{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;}
+.kpi-value{font-size:24px;font-weight:800;color:#0f172a;line-height:1;}
+.kpi-change{font-size:11px;font-weight:600;margin-top:6px;display:flex;align-items:center;gap:3px;}
+.kpi-change.up{color:#10b981;}
+.kpi-change.down{color:#ef4444;}
+.kpi-change.neu{color:#94a3b8;}
+
+/* MANAGER SECTIONS */
+.mgr-section{background:#fff;border-radius:16px;border:1px solid #e2e8f0;margin-bottom:20px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.04);}
+.mgr-header{padding:16px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;}
+.mgr-title{display:flex;align-items:center;gap:10px;}
+.mgr-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;}
+.av-h{background:linear-gradient(135deg,#0ea5e9,#38bdf8);}
+.av-m{background:linear-gradient(135deg,#f59e0b,#fbbf24);}
+.av-a{background:linear-gradient(135deg,#10b981,#34d399);}
+.mgr-name{font-size:15px;font-weight:700;color:#0f172a;}
+.mgr-role{font-size:11px;color:#94a3b8;margin-top:1px;}
+.mgr-stats{display:flex;gap:16px;}
+.mgr-stat{text-align:right;}
+.mgr-stat-val{font-size:15px;font-weight:800;color:#0f172a;}
+.mgr-stat-lbl{font-size:10px;color:#94a3b8;font-weight:600;}
+.mgr-stat-val.up{color:#10b981;}
+.mgr-stat-val.down{color:#ef4444;}
+
+/* TABLE */
+.tbl-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tbl-group-header tr{background:#f8fafc;}
+.tbl-group-header th{padding:8px 14px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;text-align:center;border-bottom:1px solid #f1f5f9;}
+.tbl-group-header th:first-child,.tbl-group-header th:nth-child(2){text-align:left;background:#fff;}
+.tbl-col-header tr th{padding:9px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;text-align:right;border-bottom:2px solid #e2e8f0;white-space:nowrap;}
+.tbl-col-header tr th:first-child{text-align:center;width:44px;}
+.tbl-col-header tr th:nth-child(2){text-align:left;}
+.ytd-header{background:#eff6ff;color:#1e40af!important;}
+.mtd-header{background:#f0fdf4;color:#166534!important;}
+.ftd-header{background:#fffbeb;color:#92400e!important;}
+
+tbody tr{border-bottom:1px solid #f8fafc;transition:background 0.1s;}
+tbody tr:hover{background:#f8fafc;}
+tbody tr.total-row{background:#f1f5f9;border-top:2px solid #e2e8f0;}
+tbody tr.total-row td{font-weight:700;color:#0f172a!important;}
+td{padding:10px 14px;color:#334155;text-align:right;vertical-align:middle;}
+td:first-child{text-align:center;color:#94a3b8;font-size:11px;font-weight:600;}
+td:nth-child(2){text-align:left;color:#0f172a;font-weight:600;white-space:nowrap;}
+.zero-val{color:#cbd5e1;}
+
+/* EDITABLE */
+.editable{display:inline-block;padding:3px 7px;border-radius:6px;cursor:pointer;min-width:56px;text-align:right;transition:all 0.15s;border:1.5px solid transparent;}
+.editable:hover{background:#eff6ff;border-color:#bfdbfe;}
+.editable:focus{background:#fff;border-color:#3b82f6;outline:none;box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+
+/* TREND */
+.up-badge{color:#10b981;font-size:10px;margin-left:3px;font-weight:700;}
+.down-badge{color:#ef4444;font-size:10px;margin-left:3px;font-weight:700;}
+
+/* GRAND TOTAL */
+.grand-wrap{background:linear-gradient(135deg,#1e3a8a,#1e40af);border-radius:16px;padding:24px 28px;margin-bottom:20px;color:#fff;}
+.grand-title{font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
+.grand-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.grand-item{background:rgba(255,255,255,0.08);border-radius:12px;padding:16px;}
+.grand-lbl{font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.grand-val{font-size:22px;font-weight:800;color:#fff;}
+.grand-val.bad{color:#fca5a5;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:13px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;display:flex;align-items:center;gap:8px;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr);}.grand-grid{grid-template-columns:repeat(2,1fr);}.topbar-center{display:none;}.mgr-stats{display:none;}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.main{padding:16px;}.topbar{padding:0 16px;}.logo-name{display:none;}}
+.dgr-card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.dgr-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.dgr-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.dgr-status.growing{background:#f0fdf4;color:#16a34a;}
+.dgr-status.degrow{background:#fef2f2;color:#dc2626;}
+.dgr-status.flat{background:#f8fafc;color:#64748b;}
+.dgr-bar-bg{height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-top:8px;}
+.dgr-bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease;}
+.mc-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.mc-table th{padding:9px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;border-bottom:2px solid #e2e8f0;white-space:nowrap;text-align:right;}
+.mc-table th:first-child,.mc-table th:nth-child(2){text-align:left;}
+.mc-table td{padding:9px 14px;border-bottom:1px solid #f8fafc;text-align:right;color:#334155;}
+.mc-table td:first-child{text-align:center;color:#94a3b8;font-size:11px;font-weight:600;}
+.mc-table td:nth-child(2){text-align:left;color:#0f172a;font-weight:600;}
+.mc-table tr:hover td{background:#f8fafc;}
+.mc-table tr.mc-total td{background:#f1f5f9;font-weight:700;color:#0f172a!important;border-top:2px solid #e2e8f0;}
+.mc-table tr.mc-mgr-hdr td{background:#eff6ff;font-size:11px;font-weight:800;letter-spacing:0.5px;border-top:2px solid #e2e8f0;}
+.mc-up{color:#10b981;font-size:10px;font-weight:700;}
+.mc-dn{color:#ef4444;font-size:10px;font-weight:700;}
+.del-mo-btn{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;display:block;margin-top:3px;}
+</style>
+</head>
+<body>
+
+<!-- SYNC OVERLAY -->
+<div id="sync-overlay" class="sync-overlay">
+  <div id="spin-wrap">
+    <div class="sync-spinner"></div>
+    <div class="sync-text" id="sync-msg">Loading data…</div>
+  </div>
+  <div id="setup-wrap" class="setup-box" style="display:none;">
+    <h2>☁️ Cloud Sync Setup</h2>
+    <p>Enter your <strong>JSONBin.io API Key</strong> to enable cross-device sync.<br><br>
+      📌 <a href="https://jsonbin.io" target="_blank" style="color:#1e40af;font-weight:600;">jsonbin.io</a> → Sign up free → API Keys → Copy key
+    </p>
+    <input id="api-key-input" placeholder="$2b$10$xxxxxxxxxxxxxxxxxxxxxxxx" />
+    <button class="setup-btn" onclick="applyApiKey()">Connect & Save Data</button>
+    <div class="setup-note">Your key is saved in this browser. Enter once, works forever.</div>
+  </div>
+</div>
+
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">SF</div>
+    <div class="logo-name">Square<span>Fin</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="topbar-center" id="main-tabs">
+      <button class="period-btn on" onclick="setView('tracker',this)">📊 AUM Tracker</button>
+      <button class="period-btn" onclick="setView('daily',this)">📈 Daily Growth</button>
+      <button class="period-btn" onclick="setView('monthly',this)">📆 Monthly Compare</button>
+    </div>
+    <div class="topbar-center" id="mgr-filter">
+      <button class="period-btn on" onclick="setPeriod('all',this)">All</button>
+      <button class="period-btn" onclick="setPeriod('harshita',this)">Harshita</button>
+      <button class="period-btn" onclick="setPeriod('mahima',this)">Mahima</button>
+      <button class="period-btn" onclick="setPeriod('anil',this)">Anil Ji</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="updated-tag"><div class="live-dot"></div> Live Tracker</div>
+    <button class="save-btn" style="background:#16a34a;" onclick="exportExcel()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export Excel
+    </button>
+    <button class="save-btn" onclick="saveData()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save
+    </button>
+  </div>
+</div>
+
+<div id="view-tracker">
+<div class="main">
+
+  <!-- KPI ROW -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-icon blue">📈</div>
+      <div class="kpi-label">YTD Total AUM</div>
+      <div class="kpi-value" id="k-ytd">—</div>
+      <div class="kpi-change up" id="kc-ytd"><span>▲</span> Year to Date</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon green">📊</div>
+      <div class="kpi-label">MTD Total AUM</div>
+      <div class="kpi-value" id="k-mtd">—</div>
+      <div class="kpi-change up" id="kc-mtd"><span>▲</span> Month to Date</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon amber">⚡</div>
+      <div class="kpi-label">FTD Total AUM</div>
+      <div class="kpi-value" id="k-ftd">—</div>
+      <div class="kpi-change neu" id="kc-ftd">For the Day</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon purple">👥</div>
+      <div class="kpi-label">YTD SIP Customers</div>
+      <div class="kpi-value" id="k-cust">—</div>
+      <div class="kpi-change up">Total Active</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon red">⚠️</div>
+      <div class="kpi-label">Cancelled SIPs</div>
+      <div class="kpi-value" id="k-cancel">—</div>
+      <div class="kpi-change down"><span>▼</span> YTD Cancellations</div>
+    </div>
+  </div>
+
+  <!-- MANAGER TABLES -->
+  <div id="sec-harshita" class="mgr-section">
+    <div class="mgr-header">
+      <div class="mgr-title">
+        <div class="mgr-avatar av-h">H</div>
+        <div><div class="mgr-name">Harshita</div><div class="mgr-role">Manager · 9 Verticals</div></div>
+      </div>
+      <div class="mgr-stats">
+        <div class="mgr-stat"><div class="mgr-stat-val up" id="h-ytd-val">—</div><div class="mgr-stat-lbl">YTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="h-mtd-val">—</div><div class="mgr-stat-lbl">MTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="h-ftd-val">—</div><div class="mgr-stat-lbl">FTD AUM</div></div>
+        <div class="mgr-stat"><button onclick="exportTeam('harshita')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;">⬇ Export</button></div>
+      </div>
+    </div>
+    <div class="tbl-scroll"><table id="tbl-harshita"></table></div>
+  </div>
+
+  <div id="sec-mahima" class="mgr-section">
+    <div class="mgr-header">
+      <div class="mgr-title">
+        <div class="mgr-avatar av-m">M</div>
+        <div><div class="mgr-name">Mahima</div><div class="mgr-role">Manager · 7 Verticals</div></div>
+      </div>
+      <div class="mgr-stats">
+        <div class="mgr-stat"><div class="mgr-stat-val up" id="m-ytd-val">—</div><div class="mgr-stat-lbl">YTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="m-mtd-val">—</div><div class="mgr-stat-lbl">MTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="m-ftd-val">—</div><div class="mgr-stat-lbl">FTD AUM</div></div>
+        <div class="mgr-stat"><button onclick="exportTeam('mahima')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;">⬇ Export</button></div>
+      </div>
+    </div>
+    <div class="tbl-scroll"><table id="tbl-mahima"></table></div>
+  </div>
+
+  <div id="sec-anil" class="mgr-section">
+    <div class="mgr-header">
+      <div class="mgr-title">
+        <div class="mgr-avatar av-a">A</div>
+        <div><div class="mgr-name">Anil Ji</div><div class="mgr-role">Manager · 9 Verticals</div></div>
+      </div>
+      <div class="mgr-stats">
+        <div class="mgr-stat"><div class="mgr-stat-val up" id="a-ytd-val">—</div><div class="mgr-stat-lbl">YTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="a-mtd-val">—</div><div class="mgr-stat-lbl">MTD AUM</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-val" id="a-ftd-val">—</div><div class="mgr-stat-lbl">FTD AUM</div></div>
+        <div class="mgr-stat"><button onclick="exportTeam('anil')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;">⬇ Export</button></div>
+      </div>
+    </div>
+    <div class="tbl-scroll"><table id="tbl-anil"></table></div>
+  </div>
+
+  <!-- GRAND TOTAL -->
+  <div class="grand-wrap">
+    <div class="grand-title">Grand Total — All Managers Combined</div>
+    <div class="grand-grid" id="grand-grid"></div>
+  </div>
+
+</div>
+</div><!-- /view-tracker -->
+
+<!-- ═══════════ DAILY GROWTH VIEW ═══════════ -->
+<div id="view-daily" style="display:none;">
+<div class="main">
+  <div class="mgr-section">
+    <div class="mgr-header" style="flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="mgr-name" style="font-size:16px;">📈 Daily Growth / Degrowth Tracker</div>
+        <div class="mgr-role" style="margin-top:2px;">Manager-wise FTD — kaun grow kar raha hai, kaun nahi</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <label style="font-size:12px;color:#64748b;font-weight:600;">Date:</label>
+        <input type="date" id="daily-date" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;">
+        <button onclick="addDailyEntry()" class="save-btn" style="padding:8px 16px;font-size:12px;">+ Log Today</button>
+      </div>
+    </div>
+    <div style="padding:20px 22px;">
+      <!-- Manager Cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;" id="daily-cards"></div>
+      <!-- History -->
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">Daily Log History</div>
+      <div class="tbl-scroll">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Date</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Harshita FTD</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Δ</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Mahima FTD</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Δ</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#10b981;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Anil Ji FTD</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#10b981;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Δ</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Total</th>
+              <th style="padding:9px 14px;text-align:center;font-size:10px;font-weight:700;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Del</th>
+            </tr>
+          </thead>
+          <tbody id="daily-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /view-daily -->
+
+<!-- ═══════════ MONTHLY COMPARISON VIEW ═══════════ -->
+<div id="view-monthly" style="display:none;">
+<div class="main">
+  <div class="mgr-section">
+    <div class="mgr-header" style="flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="mgr-name" style="font-size:16px;">📆 Monthly Comparison — Leader Wise</div>
+        <div class="mgr-role" style="margin-top:2px;">Months side-by-side compare karo, leader aur vertical wise</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="cmp-leader" onchange="renderMonthly()" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;background:#fff;">
+          <option value="all">All Leaders</option>
+          <option value="harshita">Harshita</option>
+          <option value="mahima">Mahima</option>
+          <option value="anil">Anil Ji</option>
+        </select>
+        <select id="cmp-metric" onchange="renderMonthly()" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;background:#fff;">
+          <option value="mtdTotal">MTD Total AUM</option>
+          <option value="ftdTotal">FTD Total AUM</option>
+          <option value="ytdTotal">YTD Total AUM</option>
+          <option value="mtdSipCust">MTD SIP Customers</option>
+          <option value="mtdSipCnt">MTD SIP Count</option>
+          <option value="cancelSip">Cancelled SIPs</option>
+        </select>
+        <button onclick="addMonth()" class="save-btn" style="padding:8px 16px;font-size:12px;">+ Add Month Snapshot</button>
+      </div>
+    </div>
+    <div style="padding:20px 22px;overflow-x:auto;" id="monthly-body"></div>
+  </div>
+</div>
+</div><!-- /view-monthly -->
+
+<div class="toast" id="toast">✅ Changes saved successfully!</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+let data = {
+  harshita:{label:"Harshita",key:"h",verticals:[
+    {name:"Emitra",                  ytdAum:0,        ytdSipCust:0,  ytdSipCnt:0,  cancelSip:0,  ytdTotal:0,        mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"LM",                      ytdAum:1286584,  ytdSipCust:38, ytdSipCnt:31, cancelSip:25, ytdTotal:1286584,  mtdSipCust:1, mtdSipCnt:1,  mtdLump:0,       mtdTotal:2000,  ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"SM",                      ytdAum:881249,   ytdSipCust:11, ytdSipCnt:21, cancelSip:2,  ytdTotal:881249,   mtdSipCust:1, mtdSipCnt:5,  mtdLump:0,       mtdTotal:5000,  ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"Health",                  ytdAum:2925931,  ytdSipCust:28, ytdSipCnt:10, cancelSip:6,  ytdTotal:2925931,  mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"VO",                      ytdAum:1641801,  ytdSipCust:12, ytdSipCnt:38, cancelSip:5,  ytdTotal:1641801,  mtdSipCust:1, mtdSipCnt:2,  mtdLump:0,       mtdTotal:10000, ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"IT",                      ytdAum:70147,    ytdSipCust:12, ytdSipCnt:28, cancelSip:3,  ytdTotal:70147,    mtdSipCust:1, mtdSipCnt:5,  mtdLump:0,       mtdTotal:5000,  ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"Life",                    ytdAum:61545,    ytdSipCust:2,  ytdSipCnt:2,  cancelSip:0,  ytdTotal:61545,    mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+    {name:"Digital Marketing",       ytdAum:9753481,  ytdSipCust:25, ytdSipCnt:42, cancelSip:27, ytdTotal:9753481,  mtdSipCust:3, mtdSipCnt:3,  mtdLump:0,       mtdTotal:10000, ftdSipCust:1, ftdSipCnt:0, ftdLump:10000,ftdTotal:10000},
+    {name:"Direct Digital/Campaign", ytdAum:0,        ytdSipCust:0,  ytdSipCnt:0,  cancelSip:0,  ytdTotal:0,        mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0, ftdLump:0,    ftdTotal:0},
+  ]},
+  mahima:{label:"Mahima",key:"m",verticals:[
+    {name:"EVM",           ytdAum:40004654, ytdSipCust:218, ytdSipCnt:222, cancelSip:105, ytdTotal:40004654, mtdSipCust:7, mtdSipCnt:11, mtdLump:0,  mtdTotal:110000, ftdSipCust:1, ftdSipCnt:4, ftdLump:0,  ftdTotal:4000},
+    {name:"EM",            ytdAum:6476366,  ytdSipCust:80,  ytdSipCnt:140, cancelSip:44,  ytdTotal:6476366,  mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,  mtdTotal:0,      ftdSipCust:2, ftdSipCnt:2, ftdLump:0,  ftdTotal:2000},
+    {name:"Operations",    ytdAum:295145,   ytdSipCust:7,   ytdSipCnt:20,  cancelSip:12,  ytdTotal:295145,   mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,  mtdTotal:0,      ftdSipCust:0, ftdSipCnt:0, ftdLump:0,  ftdTotal:0},
+    {name:"OEM",           ytdAum:466418,   ytdSipCust:6,   ytdSipCnt:2,   cancelSip:1,   ytdTotal:466418,   mtdSipCust:1, mtdSipCnt:5,  mtdLump:0,  mtdTotal:10000,  ftdSipCust:0, ftdSipCnt:0, ftdLump:0,  ftdTotal:0},
+    {name:"Techno Support",ytdAum:1309855,  ytdSipCust:14,  ytdSipCnt:33,  cancelSip:1,   ytdTotal:1309855,  mtdSipCust:1, mtdSipCnt:3,  mtdLump:0,  mtdTotal:5000,   ftdSipCust:0, ftdSipCnt:0, ftdLump:0,  ftdTotal:0},
+    {name:"HR / L&D",      ytdAum:6226300,  ytdSipCust:17,  ytdSipCnt:62,  cancelSip:32,  ytdTotal:6226300,  mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,  mtdTotal:0,      ftdSipCust:0, ftdSipCnt:0, ftdLump:0,  ftdTotal:0},
+    {name:"Claim",         ytdAum:0,        ytdSipCust:0,   ytdSipCnt:0,   cancelSip:0,   ytdTotal:0,        mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,  mtdTotal:0,      ftdSipCust:0, ftdSipCnt:0, ftdLump:0,  ftdTotal:0},
+  ]},
+  anil:{label:"Anil Ji",key:"a",verticals:[
+    {name:"Management",           ytdAum:24807155,  ytdSipCust:17,  ytdSipCnt:28,  cancelSip:59,  ytdTotal:24807155,  mtdSipCust:1, mtdSipCnt:3,  mtdLump:0,       mtdTotal:5000,  ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"HNI / Fintech Retail", ytdAum:110918380, ytdSipCust:199, ytdSipCnt:597, cancelSip:156, ytdTotal:110918380, mtdSipCust:6, mtdSipCnt:58, mtdLump:1000000, mtdTotal:74200, ftdSipCust:2, ftdSipCnt:12, ftdLump:0,  ftdTotal:12000},
+    {name:"Admin",                ytdAum:49046,     ytdSipCust:4,   ytdSipCnt:6,   cancelSip:0,   ytdTotal:49046,     mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"Advisory Board",       ytdAum:8748705,   ytdSipCust:7,   ytdSipCnt:30,  cancelSip:0,   ytdTotal:8748705,   mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"BISM",                 ytdAum:437477,    ytdSipCust:2,   ytdSipCnt:9,   cancelSip:0,   ytdTotal:437477,    mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"Prime",                ytdAum:2578431,   ytdSipCust:8,   ytdSipCnt:35,  cancelSip:10,  ytdTotal:2578431,   mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"Key Spanner",          ytdAum:0,         ytdSipCust:0,   ytdSipCnt:0,   cancelSip:0,   ytdTotal:0,         mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"Commercial Line",      ytdAum:0,         ytdSipCust:0,   ytdSipCnt:0,   cancelSip:0,   ytdTotal:0,         mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+    {name:"Strategic Partnership",ytdAum:673949,    ytdSipCust:5,   ytdSipCnt:9,   cancelSip:1,   ytdTotal:673949,    mtdSipCust:0, mtdSipCnt:0,  mtdLump:0,       mtdTotal:0,     ftdSipCust:0, ftdSipCnt:0,  ftdLump:0,  ftdTotal:0},
+  ]}
+};
+
+// ══════════════════════════════════════════════════════════
+// JSONBIN.IO — Simple cloud sync (refresh to get latest)
+// ══════════════════════════════════════════════════════════
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+let BIN_ID  = localStorage.getItem('sf_bin_id')  || '';
+let API_KEY = localStorage.getItem('sf_api_key') || '';
+
+function hideOverlay(){ document.getElementById('sync-overlay').style.display='none'; }
+function setSyncMsg(m){ document.getElementById('sync-msg').textContent=m; }
+
+async function applyApiKey(){
+  const key = document.getElementById('api-key-input').value.trim();
+  if(!key){ alert('Please enter your API key'); return; }
+  API_KEY = key;
+  localStorage.setItem('sf_api_key', key);
+  await loadOrCreateBin();
+}
+
+async function loadOrCreateBin(){
+  setSyncMsg('Connecting to cloud…');
+  try {
+    if(BIN_ID){
+      // Try to load existing bin
+      const res = await fetch(`${JSONBIN_BASE}/b/${BIN_ID}/latest`, {
+        headers:{ 'X-Master-Key': API_KEY }
+      });
+      if(res.ok){
+        const json = await res.json();
+        applyCloudData(json.record);
+        hideOverlay();
+        return;
+      }
+    }
+    // No bin yet — create one with current data
+    setSyncMsg('Creating your cloud storage…');
+    const res = await fetch(`${JSONBIN_BASE}/b`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'X-Master-Key': API_KEY, 'X-Bin-Name':'SquareFin-AUM' },
+      body: JSON.stringify(buildPayload())
+    });
+    if(!res.ok) throw new Error('Create bin failed: ' + res.status);
+    const json = await res.json();
+    BIN_ID = json.metadata.id;
+    localStorage.setItem('sf_bin_id', BIN_ID);
+    hideOverlay();
+    showToast('✅ Cloud storage created! Share this file with others.');
+  } catch(e){
+    console.error(e);
+    // Show setup UI
+    document.getElementById('spin-wrap').style.display='none';
+    document.getElementById('setup-wrap').style.display='block';
+  }
+}
+
+function buildPayload(){
+  return { aum_data: data, daily_log: dailyLog, mo_months: moMonths, mo_data: moData, saved_at: new Date().toISOString() };
+}
+
+function applyCloudData(record){
+  if(!record) return;
+  if(record.aum_data)  data      = record.aum_data;
+  if(record.daily_log) dailyLog  = record.daily_log;
+  if(record.mo_months) moMonths  = record.mo_months;
+  if(record.mo_data)   moData    = record.mo_data;
+}
+
+async function saveData(){
+  if(!API_KEY || !BIN_ID){ showToast('⚠️ Not connected — setup cloud first'); return; }
+  showToast('⏳ Saving…');
+  try {
+    const res = await fetch(`${JSONBIN_BASE}/b/${BIN_ID}`, {
+      method:'PUT',
+      headers:{ 'Content-Type':'application/json', 'X-Master-Key': API_KEY },
+      body: JSON.stringify(buildPayload())
+    });
+    if(!res.ok) throw new Error(res.status);
+    showToast('✅ Saved! Other devices will see this on refresh.');
+  } catch(e){
+    showToast('❌ Save failed: ' + e.message);
+  }
+}
+
+// ── BOOT ─────────────────────────────────────────────────
+(async function boot(){
+  if(API_KEY){
+    await loadOrCreateBin();
+    // Re-render after data loaded from cloud
+    ['harshita','mahima','anil'].forEach(renderTable);
+    updateKPIs(); renderGrand();
+  } else {
+    document.getElementById('spin-wrap').style.display='none';
+    document.getElementById('setup-wrap').style.display='block';
+  }
+})();
+
+// ── FORMATTERS ────────────────────────────────────────────
+function fmtAUM(n){
+  n = n||0;
+  if(n===0) return '<span class="zero-val">—</span>';
+  if(n>=10000000) return '₹'+(n/10000000).toFixed(2)+'Cr';
+  if(n>=100000)   return '₹'+(n/100000).toFixed(2)+'L';
+  if(n>=1000)     return '₹'+(n/1000).toFixed(1)+'K';
+  return '₹'+n.toLocaleString('en-IN');
+}
+function fmtN(n){
+  n=n||0;
+  if(n===0) return '<span class="zero-val">—</span>';
+  return n.toLocaleString('en-IN');
+}
+// Store previous values for comparison
+const prevData = JSON.parse(JSON.stringify(data));
+
+function trendBadge(newVal, oldVal){
+  if(oldVal === undefined || oldVal === null) return '';
+  if(newVal === oldVal) return '<span style="color:#94a3b8;font-size:10px;margin-left:3px;">●</span>';
+  if(newVal > oldVal) return '<span class="up-badge">▲</span>';
+  return '<span class="down-badge">▼</span>';
+}
+
+function trendBadgeVal(v){
+  // For initial render — just show nothing
+  return '';
+}
+
+// ── COLUMNS ───────────────────────────────────────────────
+const COLS = [
+  {k:'ytdAum',     h:'AUM Balance', g:'ytd', f:fmtAUM},
+  {k:'ytdSipCust', h:'SIP Cust.',   g:'ytd', f:fmtN},
+  {k:'ytdSipCnt',  h:'SIP Count',   g:'ytd', f:fmtN},
+  {k:'cancelSip',  h:'Cancel SIP',  g:'ytd', f:fmtN},
+  {k:'ytdTotal',   h:'Total AUM',   g:'ytd', f:fmtAUM},
+  {k:'mtdSipCust', h:'SIP Cust.',   g:'mtd', f:fmtN},
+  {k:'mtdSipCnt',  h:'SIP Count',   g:'mtd', f:fmtN},
+  {k:'mtdLump',    h:'Lumpsum',     g:'mtd', f:fmtAUM},
+  {k:'mtdTotal',   h:'Total AUM',   g:'mtd', f:fmtAUM},
+  {k:'ftdSipCust', h:'SIP Cust.',   g:'ftd', f:fmtN},
+  {k:'ftdSipCnt',  h:'SIP Count',   g:'ftd', f:fmtN},
+  {k:'ftdLump',    h:'Lumpsum',     g:'ftd', f:fmtAUM},
+  {k:'ftdTotal',   h:'Total AUM',   g:'ftd', f:fmtAUM},
+];
+
+// ── RENDER TABLE ──────────────────────────────────────────
+function renderTable(mgr){
+  const m = data[mgr];
+  const tbl = document.getElementById('tbl-'+mgr);
+
+  // Group headers
+  let gh = `<thead>
+    <tr class="tbl-group-header-tr">
+      <th rowspan="2" style="width:40px;background:#f8fafc;">#</th>
+      <th rowspan="2" style="text-align:left;background:#f8fafc;min-width:160px;">Vertical</th>
+      <th colspan="5" style="text-align:center;background:#eff6ff;color:#1e40af;font-size:10px;font-weight:800;padding:8px;letter-spacing:1px;border-bottom:1px solid #dbeafe;">📅 YTD — Year to Date</th>
+      <th colspan="4" style="text-align:center;background:#f0fdf4;color:#166534;font-size:10px;font-weight:800;padding:8px;letter-spacing:1px;border-bottom:1px solid #bbf7d0;">📆 MTD — Month to Date</th>
+      <th colspan="4" style="text-align:center;background:#fffbeb;color:#92400e;font-size:10px;font-weight:800;padding:8px;letter-spacing:1px;border-bottom:1px solid #fde68a;">⚡ FTD — For the Day</th>
+    </tr>
+    <tr>`;
+  COLS.forEach(c=>{
+    const cls = c.g==='ytd'?'ytd-header':c.g==='mtd'?'mtd-header':'ftd-header';
+    gh+=`<th class="${cls}" style="padding:8px 14px;">${c.h}</th>`;
+  });
+  gh+=`</tr></thead>`;
+
+  // Totals
+  const tot={};
+  COLS.forEach(c=>{tot[c.k]=0;});
+
+  let body='<tbody>';
+  m.verticals.forEach((v,i)=>{
+    COLS.forEach(c=>{tot[c.k]+=(v[c.k]||0);});
+    body+=`<tr>
+      <td>${i+1}</td>
+      <td>${v.name}</td>`;
+    COLS.forEach(c=>{
+      const val=v[c.k]||0;
+      body+=`<td><span class="editable" contenteditable="true"
+        data-mgr="${mgr}" data-idx="${i}" data-key="${c.k}" data-raw="${val}" data-prev="${val}"
+        onfocus="this.textContent=this.dataset.raw;selectAll(this)"
+        onblur="handleEdit(this)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+      >${c.f(val)}</span></td>`;
+    });
+    body+='</tr>';
+  });
+
+  // Total row
+  body+=`<tr class="total-row"><td></td><td>Total</td>`;
+  COLS.forEach(c=>{body+=`<td>${c.f(tot[c.k])}</td>`;});
+  body+=`</tr></tbody>`;
+
+  tbl.innerHTML=gh+body;
+
+  // Update manager summary
+  const k=m.key;
+  const el=(id)=>document.getElementById(id);
+  if(el(k+'-ytd-val')) el(k+'-ytd-val').textContent=fmtAUM(tot.ytdTotal).replace(/<[^>]*>/g,'');
+  if(el(k+'-mtd-val')) el(k+'-mtd-val').textContent=fmtAUM(tot.mtdTotal).replace(/<[^>]*>/g,'');
+  if(el(k+'-ftd-val')) el(k+'-ftd-val').textContent=fmtAUM(tot.ftdTotal).replace(/<[^>]*>/g,'');
+}
+
+function selectAll(el){
+  const range=document.createRange();
+  range.selectNodeContents(el);
+  const sel=window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ── EDIT HANDLER ──────────────────────────────────────────
+function handleEdit(el){
+  const mgr=el.dataset.mgr, idx=parseInt(el.dataset.idx), key=el.dataset.key;
+  const prevVal = parseFloat(el.dataset.prev) || 0;
+  let txt=el.textContent.trim();
+  let val=0;
+  if(txt.toLowerCase().includes('cr')) val=parseFloat(txt)*10000000;
+  else if(txt.toLowerCase().includes('l')) val=parseFloat(txt)*100000;
+  else if(txt.toLowerCase().includes('k')) val=parseFloat(txt)*1000;
+  else val=parseFloat(txt.replace(/[^0-9.]/g,''))||0;
+
+  data[mgr].verticals[idx][key]=val;
+  el.dataset.raw=val;
+  const col=COLS.find(c=>c.k===key);
+  el.innerHTML=col.f(val)+trendBadge(val,prevVal);
+  el.dataset.prev=val;
+
+  const v=data[mgr].verticals[idx];
+
+  // ── AUTO CHAIN CALCULATIONS ───────────────────────────
+  // ytdAum <-> ytdTotal sync
+  if(key==='ytdAum') v.ytdTotal = val;
+  if(key==='ytdTotal') v.ytdAum = val;
+
+  // Any FTD field changes → recalc ftdTotal
+  if(['ftdSipCust','ftdSipCnt','ftdLump','ftdTotal'].includes(key)){
+    if(key!=='ftdTotal') v.ftdTotal = (v.ftdLump||0);
+    // FTD Total AUM feeds into MTD Total AUM
+    v.mtdTotal = (v.mtdLump||0) + (v.ftdTotal||0);
+    // MTD Total AUM feeds into YTD Total AUM
+    v.ytdTotal = (v.ytdAum||0) + (v.mtdTotal||0);
+  }
+
+  // Any MTD field changes → recalc mtdTotal
+  if(['mtdSipCust','mtdSipCnt','mtdLump','mtdTotal'].includes(key)){
+    if(key!=='mtdTotal') v.mtdTotal = (v.mtdLump||0) + (v.ftdTotal||0);
+    // MTD Total AUM feeds into YTD Total AUM
+    v.ytdTotal = (v.ytdAum||0) + (v.mtdTotal||0);
+  }
+
+  // Refresh the entire row cells to show updated auto-values
+  const tbl=document.getElementById('tbl-'+mgr);
+  const rows=tbl.querySelectorAll('tbody tr:not(.total-row)');
+  if(rows[idx]){
+    rows[idx].querySelectorAll('.editable').forEach(span=>{
+      const k=span.dataset.key;
+      const newV=v[k]||0;
+      const oldV=parseFloat(span.dataset.prev)||0;
+      const c=COLS.find(x=>x.k===k);
+      if(c){
+        span.dataset.raw=newV;
+        span.innerHTML=c.f(newV)+trendBadge(newV,oldV);
+      }
+    });
+  }
+
+  updateTotalRow(mgr);
+  updateManagerHeader(mgr);
+  updateKPIs();
+  renderGrand();
+}
+
+function updateTotalRow(mgr){
+  const m=data[mgr];
+  const tot={};
+  COLS.forEach(c=>{tot[c.k]=0;});
+  m.verticals.forEach(v=>{ COLS.forEach(c=>{ tot[c.k]+=(v[c.k]||0); }); });
+
+  const tbl=document.getElementById('tbl-'+mgr);
+  const totalRow=tbl.querySelector('tr.total-row');
+  if(!totalRow) return;
+  const cells=totalRow.querySelectorAll('td');
+  COLS.forEach((c,i)=>{
+    if(cells[i+2]) cells[i+2].innerHTML=c.f(tot[c.k]);
+  });
+}
+
+function updateManagerHeader(mgr){
+  const m=data[mgr];
+  const tot={ytdTotal:0,mtdTotal:0,ftdTotal:0};
+  m.verticals.forEach(v=>{
+    tot.ytdTotal+=(v.ytdTotal||0);
+    tot.mtdTotal+=(v.mtdTotal||0);
+    tot.ftdTotal+=(v.ftdTotal||0);
+  });
+  const k=m.key;
+  const clean=(s)=>s.replace(/<[^>]*>/g,'');
+  const el2=(id)=>document.getElementById(id);
+  if(el2(k+'-ytd-val')) el2(k+'-ytd-val').textContent=clean(fmtAUM(tot.ytdTotal));
+  if(el2(k+'-mtd-val')) el2(k+'-mtd-val').textContent=clean(fmtAUM(tot.mtdTotal));
+  if(el2(k+'-ftd-val')) el2(k+'-ftd-val').textContent=clean(fmtAUM(tot.ftdTotal));
+}
+
+// ── KPIs ──────────────────────────────────────────────────
+function sumAll(key){
+  let t=0;
+  ['harshita','mahima','anil'].forEach(mgr=>{
+    data[mgr].verticals.forEach(v=>{ t+=( parseFloat(v[key]) || 0 ); });
+  });
+  return t;
+}
+function updateKPIs(){
+  const clean=(s)=>s.replace(/<[^>]*>/g,'');
+  document.getElementById('k-ytd').textContent=clean(fmtAUM(sumAll('ytdTotal')));
+  document.getElementById('k-mtd').textContent=clean(fmtAUM(sumAll('mtdTotal')));
+  document.getElementById('k-ftd').textContent=clean(fmtAUM(sumAll('ftdTotal')));
+  document.getElementById('k-cust').textContent=sumAll('ytdSipCust').toLocaleString('en-IN');
+  document.getElementById('k-cancel').textContent=sumAll('cancelSip').toLocaleString('en-IN');
+}
+
+// ── GRAND TOTAL ───────────────────────────────────────────
+function renderGrand(){
+  const items=[
+    {lbl:'YTD Total AUM',   key:'ytdTotal',   bad:false},
+    {lbl:'MTD Total AUM',   key:'mtdTotal',   bad:false},
+    {lbl:'FTD Total AUM',   key:'ftdTotal',   bad:false},
+    {lbl:'YTD SIP Customers',key:'ytdSipCust',bad:false},
+    {lbl:'Cancelled SIPs',  key:'cancelSip',  bad:true},
+  ];
+  const clean=(s)=>s.replace(/<[^>]*>/g,'');
+  document.getElementById('grand-grid').innerHTML=items.map(it=>{
+    const val=sumAll(it.key);
+    const fmt=it.key.includes('Cust')||it.key==='cancelSip'?fmtN:fmtAUM;
+    return `<div class="grand-item">
+      <div class="grand-lbl">${it.lbl}</div>
+      <div class="grand-val ${it.bad&&val>0?'bad':''}">${clean(fmt(val))}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABS ──────────────────────────────────────────────────
+function setPeriod(v,el){
+  document.querySelectorAll('#mgr-filter .period-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  ['harshita','mahima','anil'].forEach(m=>{
+    document.getElementById('sec-'+m).style.display=(v==='all'||v===m)?'block':'none';
+  });
+}
+
+function setView(v,el){
+  document.querySelectorAll('#main-tabs .period-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('view-tracker').style.display = v==='tracker'?'block':'none';
+  document.getElementById('view-daily').style.display   = v==='daily'  ?'block':'none';
+  document.getElementById('view-monthly').style.display = v==='monthly'?'block':'none';
+  document.getElementById('mgr-filter').style.display   = v==='tracker'?'flex':'none';
+  if(v==='daily')   renderDailyView();
+  if(v==='monthly') renderMonthly();
+}
+
+// saveData is defined above in the JSONBin section
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL EXPORT
+// ══════════════════════════════════════════════════════════
+function loadXLSX(cb){
+  if(typeof XLSX!=='undefined'){cb();return;}
+  showToast('⏳ Excel library load ho rahi hai...');
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload=cb;
+  s.onerror=()=>showToast('❌ Library load nahi hui. Internet check karo.');
+  document.head.appendChild(s);
+}
+
+// Full export — all teams
+function exportExcel(){
+  loadXLSX(function(){
+    const wb=XLSX.utils.book_new();
+    const numKeys=['ytdAum','ytdSipCust','ytdSipCnt','cancelSip','ytdTotal','mtdSipCust','mtdSipCnt','mtdLump','mtdTotal','ftdSipCust','ftdSipCnt','ftdLump','ftdTotal'];
+    const hdrs=['#','Vertical','YTD AUM (₹)','YTD SIP Customers','YTD SIP Count','Cancelled SIPs','YTD Total AUM (₹)','MTD SIP Customers','MTD SIP Count','MTD Lumpsum (₹)','MTD Total AUM (₹)','FTD SIP Customers','FTD SIP Count','FTD Lumpsum (₹)','FTD Total AUM (₹)'];
+
+    ['harshita','mahima','anil'].forEach(function(mgr){
+      const m=data[mgr];
+      const rows=[hdrs];
+      m.verticals.forEach(function(v,i){
+        rows.push([i+1, v.name].concat(numKeys.map(function(k){return v[k]||0;})));
+      });
+      // Blank row then totals
+      rows.push([]);
+      const totRow=['','TOTAL'].concat(numKeys.map(function(k){
+        return m.verticals.reduce(function(s,v){return s+(v[k]||0);},0);
+      }));
+      rows.push(totRow);
+      const ws=XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols']=[{wch:4},{wch:24}].concat(numKeys.map(function(){return {wch:18};}));
+      XLSX.utils.book_append_sheet(wb,ws,m.label);
+    });
+
+    // All-data combined sheet
+    const allHdrs=['#','Manager','Vertical','YTD AUM (₹)','YTD SIP Customers','YTD SIP Count','Cancelled SIPs','YTD Total AUM (₹)','MTD SIP Customers','MTD SIP Count','MTD Lumpsum (₹)','MTD Total AUM (₹)','FTD SIP Customers','FTD SIP Count','FTD Lumpsum (₹)','FTD Total AUM (₹)'];
+    var allRows=[allHdrs];
+    var rowNum=1;
+    ['harshita','mahima','anil'].forEach(function(mgr){
+      data[mgr].verticals.forEach(function(v){
+        allRows.push([rowNum++, data[mgr].label, v.name].concat(numKeys.map(function(k){return v[k]||0;})));
+      });
+    });
+    const wsAll=XLSX.utils.aoa_to_sheet(allRows);
+    wsAll['!cols']=[{wch:4},{wch:14},{wch:24}].concat(numKeys.map(function(){return {wch:18};}));
+    XLSX.utils.book_append_sheet(wb,wsAll,'All Data Combined');
+
+    // Summary sheet
+    const sumRows=[
+      ['Summary — All Managers'],
+      [],
+      ['Metric','Harshita','Mahima','Anil Ji','Grand Total']
+    ];
+    [
+      ['YTD Total AUM (₹)','ytdTotal'],
+      ['MTD Total AUM (₹)','mtdTotal'],
+      ['FTD Total AUM (₹)','ftdTotal'],
+      ['YTD SIP Customers','ytdSipCust'],
+      ['YTD SIP Count','ytdSipCnt'],
+      ['Cancelled SIPs','cancelSip'],
+      ['MTD SIP Count','mtdSipCnt'],
+      ['MTD Lumpsum (₹)','mtdLump'],
+      ['FTD SIP Count','ftdSipCnt'],
+      ['FTD Lumpsum (₹)','ftdLump']
+    ].forEach(function(pair){
+      var lbl=pair[0],k=pair[1];
+      var vals=['harshita','mahima','anil'].map(function(mgr){
+        return data[mgr].verticals.reduce(function(s,v){return s+(v[k]||0);},0);
+      });
+      sumRows.push([lbl].concat(vals).concat([vals.reduce(function(a,b){return a+b;},0)]));
+    });
+    const wsSum=XLSX.utils.aoa_to_sheet(sumRows);
+    wsSum['!cols']=[{wch:24},{wch:18},{wch:18},{wch:18},{wch:18}];
+    XLSX.utils.book_append_sheet(wb,wsSum,'Summary');
+
+    // Daily log sheet
+    var dLog=dailyLog||[];
+    if(dLog.length>0){
+      var dlRows=[['Date','Harshita FTD (₹)','Mahima FTD (₹)','Anil Ji FTD (₹)','Grand Total (₹)']];
+      dLog.forEach(function(e){dlRows.push([e.date,e.h||0,e.m||0,e.a||0,(e.h||0)+(e.m||0)+(e.a||0)]);});
+      var wsDL=XLSX.utils.aoa_to_sheet(dlRows);
+      wsDL['!cols']=[{wch:14},{wch:18},{wch:18},{wch:18},{wch:18}];
+      XLSX.utils.book_append_sheet(wb,wsDL,'Daily Log');
+    }
+
+    XLSX.writeFile(wb,'SquareFin_AUM_Full_Export.xlsx');
+    showToast('✅ Full Excel export ho gaya!');
+  });
+}
+
+// Team-wise export — single manager ka separate file
+function exportTeam(mgr){
+  loadXLSX(function(){
+    const m=data[mgr];
+    const wb=XLSX.utils.book_new();
+    const numKeys=['ytdAum','ytdSipCust','ytdSipCnt','cancelSip','ytdTotal','mtdSipCust','mtdSipCnt','mtdLump','mtdTotal','ftdSipCust','ftdSipCnt','ftdLump','ftdTotal'];
+    const hdrs=['#','Vertical','YTD AUM (₹)','YTD SIP Customers','YTD SIP Count','Cancelled SIPs','YTD Total AUM (₹)','MTD SIP Customers','MTD SIP Count','MTD Lumpsum (₹)','MTD Total AUM (₹)','FTD SIP Customers','FTD SIP Count','FTD Lumpsum (₹)','FTD Total AUM (₹)'];
+    const rows=[hdrs];
+    m.verticals.forEach(function(v,i){
+      rows.push([i+1, v.name].concat(numKeys.map(function(k){return v[k]||0;})));
+    });
+    rows.push([]);
+    const totRow=['','TOTAL'].concat(numKeys.map(function(k){
+      return m.verticals.reduce(function(s,v){return s+(v[k]||0);},0);
+    }));
+    rows.push(totRow);
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:4},{wch:24}].concat(numKeys.map(function(){return {wch:18};}));
+    XLSX.utils.book_append_sheet(wb,ws,m.label+' Data');
+    XLSX.writeFile(wb,'SquareFin_'+m.label+'_Export.xlsx');
+    showToast('✅ '+m.label+' ka export ho gaya!');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// DAILY GROWTH TRACKER
+// ══════════════════════════════════════════════════════════
+let dailyLog=[];
+
+function getMgrFTD(mgr){return data[mgr].verticals.reduce((s,v)=>s+(v.ftdTotal||0),0);}
+
+function renderDailyView(){
+  const today=new Date().toISOString().split('T')[0];
+  const inp=document.getElementById('daily-date');
+  if(inp&&!inp.value) inp.value=today;
+  renderDailyCards();
+  renderDailyHistory();
+}
+
+function renderDailyCards(){
+  const mgrs=[
+    {key:'harshita',lbl:'Harshita',cls:'av-h',col:'#0ea5e9'},
+    {key:'mahima',  lbl:'Mahima',  cls:'av-m',col:'#f59e0b'},
+    {key:'anil',    lbl:'Anil Ji', cls:'av-a',col:'#10b981'},
+  ];
+  const c=document.getElementById('daily-cards');
+  if(!c)return;
+  const maxFTD=Math.max(...mgrs.map(m=>getMgrFTD(m.key)),1);
+  c.innerHTML=mgrs.map(m=>{
+    const ftd=getMgrFTD(m.key);
+    const lastEntry=dailyLog.length>0?dailyLog[dailyLog.length-1]:null;
+    const prevKey=m.key==='anil'?'a':m.key.charAt(0);
+    const prev=lastEntry?(lastEntry[prevKey]||0):0;
+    const diff=ftd-prev;
+    const pct=prev>0?((diff/prev)*100).toFixed(1):'—';
+    const st=diff>0?'growing':diff<0?'degrow':'flat';
+    const stLbl=diff>0?'▲ Growing':diff<0?'▼ Degrowth':'● Flat';
+    const barW=Math.round((ftd/maxFTD)*100);
+    const diffColor=diff>0?'#10b981':diff<0?'#ef4444':'#94a3b8';
+    const fmtClean=v=>fmtAUM(v).replace(/<[^>]*>/g,'')||'—';
+    return `<div class="dgr-card">
+      <div class="dgr-card-top">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="mgr-avatar ${m.cls}">${m.lbl.charAt(0)}</div>
+          <div><div style="font-size:14px;font-weight:700;color:#0f172a;">${m.lbl}</div><div style="font-size:10px;color:#94a3b8;">FTD AUM (current data)</div></div>
+        </div>
+        <div class="dgr-status ${st}">${stLbl}</div>
+      </div>
+      <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;">${fmtClean(ftd)}</div>
+      <div style="font-size:11px;color:${diffColor};margin-top:4px;font-weight:600;">
+        ${diff!==0?(diff>0?'▲ +':'▼ ')+fmtClean(Math.abs(diff))+' vs prev logged'+(prev>0?' ('+pct+'%)':''):'No previous log found'}
+      </div>
+      <div class="dgr-bar-bg"><div class="dgr-bar-fill" style="width:${barW}%;background:${m.col};"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function addDailyEntry(){
+  const date=document.getElementById('daily-date').value||new Date().toISOString().split('T')[0];
+  const entry={date,h:getMgrFTD('harshita'),m:getMgrFTD('mahima'),a:getMgrFTD('anil'),ts:Date.now()};
+  dailyLog=dailyLog.filter(e=>e.date!==date);
+  dailyLog.push(entry);
+  dailyLog.sort((a,b)=>a.date.localeCompare(b.date));
+  renderDailyCards();
+  renderDailyHistory();
+  showToast('✅ Entry logged! Click Save to sync to all devices.');
+}
+
+function delDailyEntry(date){
+  dailyLog=dailyLog.filter(e=>e.date!==date);
+  renderDailyHistory();
+}
+
+function renderDailyHistory(){
+  const tbody=document.getElementById('daily-tbody');
+  if(!tbody)return;
+  if(dailyLog.length===0){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Koi entry nahi hai. "+ Log Today" click karo.</td></tr>';
+    return;
+  }
+  const sorted=[...dailyLog].reverse();
+  const fc=v=>fmtAUM(v).replace(/<[^>]*>/g,'')||'—';
+  tbody.innerHTML=sorted.map((e,i)=>{
+    const prv=sorted[i+1];
+    const dCell=(cur,p)=>{
+      if(p===undefined)return'<td style="color:#cbd5e1;text-align:right;">—</td>';
+      const d=cur-p;
+      if(d===0)return'<td style="color:#94a3b8;text-align:right;">●</td>';
+      return`<td style="text-align:right;"><span class="${d>0?'mc-up':'mc-dn'}">${d>0?'▲ +':'▼ '}${fc(Math.abs(d))}</span></td>`;
+    };
+    return`<tr>
+      <td style="padding:9px 14px;text-align:left;font-weight:600;color:#0f172a;">${e.date}</td>
+      <td style="padding:9px 14px;text-align:right;color:#0ea5e9;font-weight:700;">${fc(e.h)}</td>
+      ${dCell(e.h,prv?.h)}
+      <td style="padding:9px 14px;text-align:right;color:#d97706;font-weight:700;">${fc(e.m)}</td>
+      ${dCell(e.m,prv?.m)}
+      <td style="padding:9px 14px;text-align:right;color:#10b981;font-weight:700;">${fc(e.a)}</td>
+      ${dCell(e.a,prv?.a)}
+      <td style="padding:9px 14px;text-align:right;font-weight:800;color:#6366f1;">${fc((e.h||0)+(e.m||0)+(e.a||0))}</td>
+      <td style="padding:9px 14px;text-align:center;"><button onclick="delDailyEntry('${e.date}')" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// MONTHLY COMPARISON
+// ══════════════════════════════════════════════════════════
+let moMonths=[];
+let moData={};
+
+function snapMonth(lbl){
+  moData[lbl]={};
+  ['harshita','mahima','anil'].forEach(mgr=>{
+    moData[lbl][mgr]=data[mgr].verticals.map(v=>Object.assign({},v));
+  });
+}
+
+// Seed current month if none
+if(moMonths.length===0){
+  const now=new Date();
+  const lbl=now.toLocaleString('default',{month:'short'})+' '+now.getFullYear();
+  moMonths.push(lbl);
+  snapMonth(lbl);
+}
+
+function addMonth(){
+  const now=new Date();
+  const def=now.toLocaleString('default',{month:'short'})+' '+now.getFullYear();
+  const lbl=(prompt('Month label (e.g. "Mar 2025"):', def)||'').trim()||def;
+  if(!moMonths.includes(lbl)) moMonths.push(lbl);
+  snapMonth(lbl);
+  renderMonthly();
+  showToast('✅ Snapshot added: '+lbl+' — click Save to sync.');
+}
+
+function delMonth(lbl){
+  moMonths=moMonths.filter(m=>m!==lbl);
+  delete moData[lbl];
+  renderMonthly();
+}
+
+function renderMonthly(){
+  const leader=document.getElementById('cmp-leader').value;
+  const metric=document.getElementById('cmp-metric').value;
+  const isAUM=['ytdAum','ytdTotal','mtdTotal','mtdLump','ftdTotal','ftdLump'].includes(metric);
+  const fmt=isAUM?fmtAUM:fmtN;
+  const fc=s=>(typeof s==='string'?s:String(s)).replace(/<[^>]*>/g,'');
+  const body=document.getElementById('monthly-body');
+  if(!body)return;
+
+  if(moMonths.length===0){body.innerHTML='<p style="text-align:center;color:#94a3b8;padding:24px;">No months yet. "+ Add Month Snapshot" click karo.</p>';return;}
+
+  const mgrs=leader==='all'?['harshita','mahima','anil']:[leader];
+  const mgrInfo={
+    harshita:{lbl:'Harshita',col:'#0ea5e9'},
+    mahima:{lbl:'Mahima',col:'#f59e0b'},
+    anil:{lbl:'Anil Ji',col:'#10b981'}
+  };
+
+  // colspan = 2 (# + vertical) + months + delta cols
+  const nMo=moMonths.length;
+  const nDelta=Math.max(0,nMo-1);
+  const totalCols=2+nMo+nDelta;
+
+  let html='<table class="mc-table"><thead><tr>';
+  html+='<th style="text-align:center;width:36px;">#</th><th style="text-align:left;min-width:150px;">Vertical</th>';
+  moMonths.forEach((mo,mi)=>{
+    html+=`<th style="text-align:right;white-space:nowrap;">${mo}<button class="del-mo-btn" onclick="delMonth('${mo.replace(/'/g,"\\'")}')">✕ Remove</button></th>`;
+    if(mi>0) html+='<th style="text-align:right;white-space:nowrap;color:#94a3b8;font-size:9px;">Δ vs Prev</th>';
+  });
+  html+='</tr></thead><tbody>';
+
+  const grandTotals=moMonths.map(()=>0);
+
+  mgrs.forEach(mgr=>{
+    const info=mgrInfo[mgr];
+    html+=`<tr class="mc-mgr-hdr"><td colspan="${totalCols}" style="color:${info.col};">👤 ${info.lbl}</td></tr>`;
+
+    const mgrTotals=moMonths.map(()=>0);
+
+    data[mgr].verticals.forEach((v,i)=>{
+      html+=`<tr><td>${i+1}</td><td>${v.name}</td>`;
+      moMonths.forEach((mo,mi)=>{
+        const snap=moData[mo]&&moData[mo][mgr]&&moData[mo][mgr][i];
+        const val=snap?(snap[metric]||0):0;
+        mgrTotals[mi]+=val;
+        html+=`<td>${val>0?fc(fmt(val)):'<span style="color:#cbd5e1;">—</span>'}</td>`;
+        if(mi>0){
+          const psnap=moData[moMonths[mi-1]]&&moData[moMonths[mi-1]][mgr]&&moData[moMonths[mi-1]][mgr][i];
+          const pval=psnap?(psnap[metric]||0):0;
+          const d=val-pval;
+          if(d===0&&!val&&!pval) html+='<td style="color:#cbd5e1;text-align:right;">—</td>';
+          else html+=`<td style="text-align:right;"><span class="${d>=0?'mc-up':'mc-dn'}">${d>=0?'▲ +':'▼ '}${fc(fmt(Math.abs(d)))}</span></td>`;
+        }
+      });
+      html+='</tr>';
+    });
+
+    // Manager total row
+    html+=`<tr class="mc-total"><td></td><td>Total — ${info.lbl}</td>`;
+    mgrTotals.forEach((tot,mi)=>{
+      html+=`<td>${fc(fmt(tot))}</td>`;
+      grandTotals[mi]+=tot;
+      if(mi>0){const d=tot-mgrTotals[mi-1];html+=`<td style="text-align:right;"><span class="${d>=0?'mc-up':'mc-dn'}">${d>=0?'▲ +':'▼ '}${fc(fmt(Math.abs(d)))}</span></td>`;}
+    });
+    html+='</tr>';
+  });
+
+  // Grand total (only if multiple leaders)
+  if(mgrs.length>1){
+    html+='<tr style="background:#1e3a8a;"><td style="color:rgba(255,255,255,0.5);"></td><td style="color:#fff;font-weight:800;text-align:left;">Grand Total</td>';
+    grandTotals.forEach((tot,mi)=>{
+      html+=`<td style="color:#fff;font-weight:800;text-align:right;">${fc(fmt(tot))}</td>`;
+      if(mi>0){const d=tot-grandTotals[mi-1];html+=`<td style="text-align:right;"><span style="color:${d>=0?'#86efac':'#fca5a5'};font-weight:700;">${d>=0?'▲ +':'▼ '}${fc(fmt(Math.abs(d)))}</span></td>`;}
+    });
+    html+='</tr>';
+  }
+
+  html+='</tbody></table>';
+  body.innerHTML=html;
+}
+
+// ── INIT ──────────────────────────────────────────────────
+['harshita','mahima','anil'].forEach(renderTable);
+updateKPIs();
+renderGrand();
+
+// Set today date for daily input
+(function(){const d=document.getElementById('daily-date');if(d)d.value=new Date().toISOString().split('T')[0];})();
+</script>
+</body>
+</html>
